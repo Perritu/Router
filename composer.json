@@ -1,0 +1,21 @@
+{
+    "name": "perritu/router",
+    "description": "Simple -yet powerfull- PHP Router",
+    "type": "library",
+    "license": "unlicence",
+    "autoload": {
+        "psr-4": {
+            "Perritu\\Router\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Angel Garcia",
+            "email": "git@angelgarcia.dev"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "php": ">=8.1"
+    }
+}
