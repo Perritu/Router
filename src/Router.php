@@ -19,13 +19,13 @@ class Router
      * @readonly
      * @var string $RequestPath Path requested by the current run.
      */
-    public static string $RequestPath;
+    public static ?string $RequestPath = null;
 
     /**
      * @readonly
      * @var string $RequestVerb HTTP verb requested by the current run.
      */
-    public static string $RequestVerb;
+    public static ?string $RequestVerb = null;
 
     /**
      * @readonly
