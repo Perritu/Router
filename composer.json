@@ -2,7 +2,7 @@
     "name": "perritu/router",
     "description": "Simple -yet powerfull- PHP Router",
     "type": "library",
-    "license": "unlicence",
+    "license": "Unlicense",
     "autoload": {
         "psr-4": {
             "Perritu\\Router\\": "src/"
