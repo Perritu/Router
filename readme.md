@@ -14,7 +14,6 @@ A lightweight, simple, yet powerfull routing library for PHP.
   - Array to API responses.
   - Subrouting / route prefixes.
   - Subnamespace / namespace prefixes.
-  - After / Before Middlewares.
 
 ## Requirements
 

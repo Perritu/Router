@@ -14,7 +14,7 @@
             "email": "git@angelgarcia.dev"
         }
     ],
-    "minimum-stability": "beta",
+    "minimum-stability": "RC",
     "require": {
         "php": ">=8.1"
     }
