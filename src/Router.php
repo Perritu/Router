@@ -182,6 +182,7 @@ class Router
             // If the requested content is known, output that way.
             if(self::IsApi()){ /* ... */}
 
+            header('Content-type: application/json');
             echo json_encode($Response, JSON_UNESCAPED_UNICODE);
         }
 
@@ -414,7 +415,7 @@ class Router
     public static function IsApi(): bool
     {
         // If the header is ausent, drop this out.
-        if (isset($_SERVER['HTTP_CONTENT_TYPE'])) return false;
+        if (!isset($_SERVER['HTTP_CONTENT_TYPE'])) return false;
 
         return in_array(
             strtolower($_SERVER['HTTP_CONTENT_TYPE']),
@@ -425,19 +426,6 @@ class Router
     ////////////////////////////////////////////////////////////////////////////
     // Private functions. Internal use only. ///////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Shortcut definition to terminate a given execution.
-     *
-     * @param mixed Return value.
-     * @param bool  True to terminate execution.
-     * @return mixed First param.
-     */
-    private static function EndProccess(mixed $value, bool $Terminate)
-    {
-        if($Terminate) exit;
-        return $value;
-    }
 
     /**
      * Perform the call execution and return the result of it.
