@@ -28,15 +28,15 @@ public Router::MATCH(
   Multiple options can be used using the or `|` operator.
 - `Criteria`
   String to be used in the matching process.
-  See [Router::Evaluate].
+  See [Router::Evaluate][].
 - `Callback`
-  Either a [callable] or a `Path\To\Public@method` to be called.
+  Either a [callable][] or a `Path\To\Public@method` to be called.
 
   Note than the path is evaluated from the very root, and pre-pending
   `Router::ClassPrefix` value, which is empty by default.
 - `EvalFlags`
   Bitwise flags to be used during the matching process.
-  See [Router::Evaluate].
+  See [Router::Evaluate][].
 
   The possible values are:
   - `Router::E_FLAT`
@@ -44,7 +44,7 @@ public Router::MATCH(
   - `Router::E_FLAT_I`
     Same as `Router::E_FLAT`, but case insensitively.
   - `Router::E_PREG`
-    Perform the evaluation using [preg_match].
+    Perform the evaluation using [preg_match][].
   - `Router::E_PREG_I`
     Same as `Router::E_PREG`, but case insensitively.
 

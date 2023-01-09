@@ -25,7 +25,7 @@ public Router::Evaluate(
   - `Router::E_FLAT_I`
     Same as `Router::E_FLAT`, but case insensitively.
   - `Router::E_PREG`
-    Perform the evaluation using [preg_match].
+    Perform the evaluation using [preg_match][].
   - `Router::E_PREG_I`
     Same as `Router::E_PREG`, but case insensitively.
 

@@ -2,12 +2,12 @@
 
 (PHP 8)
 
-# Introduction
+## Introduction
 
 Simplifies the process of handle the incoming requests and directing them to
 developer-defined code flow.
 
-# Class synopsis
+## Class synopsis
 
 ```php
 class Router {
@@ -55,24 +55,24 @@ class Router {
 - RequestVerb
   HTTP verb used to perform the current http request.
 - RequestVerbBitwise
-  Bitwise representation for `$RequestVerb`. See [Router::Evaluate].
+  Bitwise representation for `$RequestVerb`. See [Router::Evaluate][].
 - ClassPrefix
   String prefixed when calling methods by the `Path\To\Public@method` way. This
   is usefull when calling class in the same napespace.
 
 ## Contents
 
-- [Router::__constructor]
+- [Router::__constructor][]
   Create an instance andset the request path and verb.
-- [Router::MATCH]
+- [Router::MATCH][]
   Perform code call wheen a request matches with the given conditions.
-- [Shortcuts] (Router::GET, Router::HEAD, Router::POST, etc.)
+- [Shortcuts][] (Router::GET, Router::HEAD, Router::POST, etc.)
   Perform code call wheen a request matches with the given conditions.
-- [Router::Evaluate]
+- [Router::Evaluate][]
   Evaluates the current request against the given evaluation conditions.
-- [Router::Mount]
+- [Router::Mount][]
   Conducts a traffic throug a set of subroutes.
-- [Router::IsApi]
+- [Router::IsApi][]
   Guess if the current request is expecting an API response.
 
 [Router::__constructor]:function.constructor.md
