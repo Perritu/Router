@@ -3,7 +3,7 @@
 (PHP 8)
 Perform code call wheen a request matches with the given conditions.
 
-## Description
+### Description
 
 ```php
 public Router::GET( // ::HEAD, ::POST, ::PUT, etc.
@@ -14,7 +14,7 @@ public Router::GET( // ::HEAD, ::POST, ::PUT, etc.
 ): mixed
 ```
 
-## Parameters
+### Parameters
 
 - `Criteria`
   String to be used in the matching process.
@@ -41,7 +41,7 @@ public Router::GET( // ::HEAD, ::POST, ::PUT, etc.
 - `Terminate`
   Flag to perform execution shutdown after `Callback` finishes it's performing.
 
-## Return values
+### Return values
 
 Return true if `$Callback` was called and performed it's execution succesfully
 (nothing thrown), false if no call was performed, and throw if `$Callback` does
@@ -52,7 +52,7 @@ it.
 > which evaluates to `false`. Use of the identique `===` operator is advised
 > when handling returned value of this function
 
-## Examples
+### Examples
 
 **Example #1. Define a static `/about` handler for `GET` HTTP verb.**
 
@@ -115,7 +115,7 @@ This will call the `getReport` public method and do the same behavoir as if it
 was a `function`. If the method is not a satic method, the parent class will be
 instanced with no parametters.
 
-## Throws
+### Throws
 
 This function can throw an `EXCEPTION` if `$Callback` is neither a `callable`
 nor a valid string.
@@ -126,7 +126,7 @@ by the `__constructor` of it's class if not a satic method.
 This function throw a `EXCEPTION` if `$Verb` or `$EvalFlags` are set outide of
 its allowed values.
 
-## Final notes
+### Final notes
 
 Router aliases can be used if only one HTTP verb is desired to be handled by
 `$Callback`.

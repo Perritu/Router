@@ -2,12 +2,12 @@
 
 (PHP 8)
 
-# Introduction
+## Introduction
 
 Simplifies the process of handle the incoming requests and directing them to
 developer-defined code flow.
 
-# Class synopsis
+## Class synopsis
 
 ```php
 class Router {
@@ -48,7 +48,7 @@ class Router {
 }
 ```
 
-## Properties
+### Properties
 
 - RequestPath
   Path used to perform the current http request.
@@ -60,7 +60,7 @@ class Router {
   String prefixed when calling methods by the `Path\To\Public@method` way. This
   is usefull when calling class in the same napespace.
 
-## Contents
+### Contents
 
 - [Router::__constructor]
   Create an instance andset the request path and verb.

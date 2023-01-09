@@ -7,6 +7,8 @@
 
 namespace Perritu\Router;
 
+use Exception;
+
 /**
  * The Router class.
  *
@@ -70,36 +72,46 @@ class Router
      */
     public function __construct(string $Path = null, string $Verb = null)
     {
-        if (is_null($Path)) $Path = $_SERVER['REQUEST_URI'];
-        if (is_null($Verb)) $Verb = $_SERVER['REQUEST_METHOD'];
+        if (null === $Path) $Path = self::IfNUll($_SERVER['REQUEST_URI'], null);
+        if (null === $Verb) $Verb = self::IfNUll($_SERVER['REQUEST_METHOD'], null);
+
+        if(null === $Path || null === $Verb)
+        throw new Exception('Cannot fetch the request values.', -1);
 
         self::$RequestPath = $Path;
         self::$RequestVerb = $Verb;
 
-        switch ($Verb){
+        switch ($Verb) {
             case "DELETE":
-                self::$RequestVerbBitwise = self::DELETE; break;
+                self::$RequestVerbBitwise = self::DELETE;
+                break;
 
             case "GET":
-                self::$RequestVerbBitwise = self::GET; break;
+                self::$RequestVerbBitwise = self::GET;
+                break;
 
             case "HEAD":
-                self::$RequestVerbBitwise = self::HEAD; break;
+                self::$RequestVerbBitwise = self::HEAD;
+                break;
 
             case "OPTIONS":
-                self::$RequestVerbBitwise = self::OPTIONS; break;
+                self::$RequestVerbBitwise = self::OPTIONS;
+                break;
 
             case "PATCH":
-                self::$RequestVerbBitwise = self::PATCH; break;
+                self::$RequestVerbBitwise = self::PATCH;
+                break;
 
             case "POST":
-                self::$RequestVerbBitwise = self::POST; break;
+                self::$RequestVerbBitwise = self::POST;
+                break;
 
             case "PUT":
-                self::$RequestVerbBitwise = self::PUT; break;
+                self::$RequestVerbBitwise = self::PUT;
+                break;
 
             default:
-                die;
+                exit;
         }
     }
 
@@ -183,7 +195,7 @@ class Router
             if(self::IsApi()){ /* ... */}
 
             header('Content-type: application/json');
-            echo json_encode($Response, JSON_UNESCAPED_UNICODE);
+            printf("%s", json_encode($Response, JSON_UNESCAPED_UNICODE));
         }
 
         // Terminate the code execution.
@@ -426,6 +438,17 @@ class Router
     ////////////////////////////////////////////////////////////////////////////
     // Private functions. Internal use only. ///////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Return the first parametter if is not null, the fallback if it's.
+     *
+     * @param mixed $Test     Value to be tested.
+     * @param mixed $Fallback Fallback value to be returned.
+     */
+    static private function IfNUll(&$Test, $Fallback)
+    {
+        return (null === $Test)? $Fallback: $Test;
+    }
 
     /**
      * Perform the call execution and return the result of it.

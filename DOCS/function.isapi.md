@@ -3,18 +3,18 @@
 (PHP 8)
 Try to guess if the current request is expecting an API response.
 
-## Description
+### Description
 
 ```php
 public Router::IsApi(): bool
 ```
 
-## Return values
+### Return values
 
 Return true if the current request has a `Content-Type` header with a known API
 `mime-type` value.
 
-## Examples
+### Examples
 
 **Return HTML if call was not performed by an API.**
 ```php
@@ -31,7 +31,7 @@ Router::MATCH(Router::POST | Router::PATCH, '/foo/bar', function(){
 ```
 
 
-## Final notes
+### Final notes
 
 This function is dependant of the headers, so it should not be used if the
 application is behind a reverse-proxy that stripes the `Content-Type` header.

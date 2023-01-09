@@ -3,7 +3,7 @@
 (PHP 8)
 Inits a new instance and sets the path and http verb requested.
 
-## Description
+### Description
 
 ```php
 public Router::__constructor(
@@ -12,14 +12,14 @@ public Router::__constructor(
 )
 ```
 
-## Parameters
+### Parameters
 
 - `Path`
   Path used to perform the request.
 - `Verb`
   HTTP Verb used to perform the request.
 
-## Examples
+### Examples
 
 **Bare example to use custom variables.**
 

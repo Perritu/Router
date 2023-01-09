@@ -3,7 +3,7 @@
 (PHP 8)
 Perform request evaluation against given parametters.
 
-## Description
+### Description
 
 ```php
 public Router::Evaluate(
@@ -12,7 +12,7 @@ public Router::Evaluate(
 ): bool
 ```
 
-## Parameters
+### Parameters
 
 - `Criteria`
   String to be used in the matching process.
@@ -29,15 +29,15 @@ public Router::Evaluate(
   - `Router::E_PREG_I`
     Same as `Router::E_PREG`, but case insensitively.
 
-## Return values
+### Return values
 
 Return true if the given evaluation conditions match the current request.
 
-## Examples
+### Examples
 
 @TODO
 
-## Throws
+### Throws
 
 This function throw a `EXCEPTION` if `$Criteria` is malformed or invalid.
 
