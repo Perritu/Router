@@ -1,5 +1,7 @@
 ## Perritu/Router
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/741da1c4dcac47dea1f3097f5972d865)](https://app.codacy.com/gh/Perritu/Router?utm_source=github.com&utm_medium=referral&utm_content=Perritu/Router&utm_campaign=Badge_Grade_Settings)
+
 A lightweight, simple, yet powerfull routing library for PHP.
 
 ### Features
