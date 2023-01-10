@@ -1,8 +1,10 @@
-## Perritu/Router
+# Perritu/Router
 
 A lightweight, simple, yet powerfull routing library for PHP.
 
-### Features
+![Packagist Version][] ![Packagist PHP Version][] ![Packagist License][] [![Codacy grade][]](https://www.codacy.com/gh/Perritu/Router)
+
+## Features
 
 - Supports for `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST` and `PUT`
   request verbs.
@@ -15,7 +17,7 @@ A lightweight, simple, yet powerfull routing library for PHP.
 - Subrouting / route prefixes.
 - Subnamespace / namespace prefixes.
 
-### Requirements
+## Requirements
 
 Perritu/Router can run just fine out-of-the-box (even without Composer).
 
@@ -24,7 +26,7 @@ implemented without it.
 
 All you need is PHP 8.1 or greater and any URL rewriting technique.
 
-### Installation.
+## Installation.
 
 There are 2 ways of install.
 - Using [composer](https://getcomposer.org/download/). (Recomended)
@@ -37,7 +39,7 @@ There are 2 ways of install.
   require_once(PROJECT_ROOT .'/include/perritu/router.php');
   ```
 
-### Usage
+## Usage
 
 Once imported, do a `use` statement to start using the router, then, start with
 your routing definitions.
@@ -58,3 +60,13 @@ R::MATCH(R::ANY, '.*', function(){
 ```
 
 You can read the documentation in the [DOCS](DOCS/Class.md).
+
+## External links.
+
+Codacy: https://www.codacy.com/gh/Perritu/Router
+Packagist: https://packagist.org/packages/perritu/router
+
+[Codacy grade]:https://img.shields.io/codacy/grade/80c9ca95a79846d29723b545196c7f0e?style=flat-square
+[Packagist Version]:https://img.shields.io/packagist/v/perritu/router?style=flat-square
+[Packagist PHP Version]:https://img.shields.io/packagist/dependency-v/perritu/router/php?style=flat-square
+[Packagist License]:https://img.shields.io/packagist/l/perritu/router?style=flat-square
