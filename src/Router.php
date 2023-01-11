@@ -147,7 +147,7 @@ class Router
             if (0 !== (self::E_CASE_INSENSITIVE & $Flags))
             $Reference = "(?i)$Reference";
 
-            if (false === preg_match($Reference, self::$RequestPath, $Matches))
+            if (false === preg_match("/$Reference/", self::$RequestPath, $Matches))
             return false;
 
             return $Matches;
