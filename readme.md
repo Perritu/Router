@@ -1,4 +1,6 @@
 # Perritu/Router
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FPerritu%2FRouter.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_shield)
+
 
 A lightweight, simple, yet powerfull routing library for PHP.
 
@@ -70,3 +72,7 @@ Packagist: https://packagist.org/packages/perritu/router
 [Packagist Version]:https://img.shields.io/packagist/v/perritu/router?style=flat-square
 [Packagist PHP Version]:https://img.shields.io/packagist/dependency-v/perritu/router/php?style=flat-square
 [Packagist License]:https://img.shields.io/packagist/l/perritu/router?style=flat-square
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FPerritu%2FRouter.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_large)
