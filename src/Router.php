@@ -472,6 +472,7 @@ class Router
      *
      * @param callable $Callback Callable or string to method.
      * @param array    $Params   Array to pass as function params.
+     * @return mixed   Result of the function execution.
      */
     private static function PerformCall(
         callable | string $Callback,
