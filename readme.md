@@ -1,10 +1,10 @@
 # Perritu/Router
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FPerritu%2FRouter.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_shield)
-
 
 A lightweight, simple, yet powerfull routing library for PHP.
 
-![Packagist Version][] ![Packagist PHP Version][] ![Packagist License][] [![Codacy grade][]](https://www.codacy.com/gh/Perritu/Router)
+![Packagist Version][] ![Packagist PHP Version][] ![Packagist License][] [![Codacy grade][]](https://app.codacy.com/gh/Perritu/Router/dashboard)
+
+[![FOSSA Status][]](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_shield)
 
 ## Features
 
@@ -65,14 +65,14 @@ You can read the documentation in the [DOCS](DOCS/Class.md).
 
 ## External links.
 
-Codacy: https://www.codacy.com/gh/Perritu/Router
+Codacy: https://app.codacy.com/gh/Perritu/Router/dashboard
+
 Packagist: https://packagist.org/packages/perritu/router
+
+FOSSA: https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_large
 
 [Codacy grade]:https://img.shields.io/codacy/grade/80c9ca95a79846d29723b545196c7f0e?style=flat-square
 [Packagist Version]:https://img.shields.io/packagist/v/perritu/router?style=flat-square
 [Packagist PHP Version]:https://img.shields.io/packagist/dependency-v/perritu/router/php?style=flat-square
 [Packagist License]:https://img.shields.io/packagist/l/perritu/router?style=flat-square
-
-
-## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FPerritu%2FRouter.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_large)
+[FOSSA Status]:https://app.fossa.com/api/projects/git%2Bgithub.com%2FPerritu%2FRouter.svg?type=large
