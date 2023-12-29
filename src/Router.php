@@ -432,6 +432,29 @@ class Router
     }
 
     /**
+     * @todo
+     */
+    public static function MountNamespace(
+        string $BaseNamespace,
+        string $BaseCriteria = '/',
+        int $Verb = self::ANY,
+        bool $Terminate = true
+    ): bool {
+        if(0 !== strpos(self::$RequestPath, $BaseCriteria)) return false;
+        if(0 !== self::$RequestVerb & $Verb) return false;
+
+        $Path = substr(self::$RequestPath, strlen($BaseCriteria));
+        $Full = str_replace('/', '\\', "$BaseNamespace/$Path@" . self::$RequestVerb);
+
+        [$Class, $Method] = explode('@', $Full, 2);
+
+        if(!class_exists($Class)) return false;
+        if(!method_exists($Class, $Method)) return false;
+
+        return self::MATCH($Verb, '(.+)', $Full, self::E_PREG, $Terminate);
+    }
+
+    /**
      * Try to guess if the current request is expecting an API response.
      *
      * @return bool `true` if the current request is expecting an API response.
