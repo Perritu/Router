@@ -35,6 +35,12 @@ class Router {
     int    $EvalFlags = Router::E_FLAT_I,
     bool   $Terminate = true
   ): mixed
+  public static MountNamespace(
+    string $BaseNamespace,
+    string $BaseCriteria = '/',
+    int    $Verb         = self::ANY,
+    bool   $Terminate    = true
+  ): bool
   public Evaluate(
     string $Criteria,
     int    $EvalFlags = Router::E_FLAT_I
@@ -70,8 +76,10 @@ class Router {
   Perform code call wheen a request matches with the given conditions.
 - [Router::Evaluate][]
   Evaluates the current request against the given evaluation conditions.
+- [Router::MountNamespace][]
+  Use a namespace-based tree to perform the request evaluations.
 - [Router::Mount][]
-  Conducts a traffic throug a set of subroutes.
+  Conducts a traffic throug a set of subroutes. (:warning: DRAFT FUNCTION :warning:)
 - [Router::IsApi][]
   Guess if the current request is expecting an API response.
 
@@ -79,5 +87,6 @@ class Router {
 [Router::MATCH]:function.match.md
 [Router::Evaluate]:function.evaluate.md
 [Router::IsApi]:function.isapi.md
+[Router::MountNamespace]:function.mountNamespace.md
 [Router::Mount]:function.mount.md
 [Shortcuts]:shortcuts.md
