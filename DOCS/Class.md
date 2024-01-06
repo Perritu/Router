@@ -79,7 +79,7 @@ class Router {
 - [Router::MountNamespace][]
   Use a namespace-based tree to perform the request evaluations.
 - [Router::Mount][]
-  Conducts a traffic throug a set of subroutes. (:warning: DRAFT FUNCTION :warning:)
+  Conducts a traffic throug a set of subroutes. ( :warning: DRAFT FUNCTION :warning: )
 - [Router::IsApi][]
   Guess if the current request is expecting an API response.
 
