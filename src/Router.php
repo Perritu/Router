@@ -134,21 +134,21 @@ class Router
     public static function Evaluate(string $Criteria, int $Flags)
     {
         // Reference for internal use
-        $Reference = self::$CriteriaPrefix.$Criteria;
+        $Reference = self::$CriteriaPrefix . $Criteria;
 
         if (0 !== (self::E_FLAT & $Flags)) { // Flat plain-text evaluation mode.
             if (0 !== (self::E_CASE_INSENSITIVE & $Flags))
-            return strtolower($Reference) == strtolower(self::$RequestPath);
+                return strtolower($Reference) == strtolower(self::$RequestPath);
 
             return $Reference == self::$RequestPath;
         }
 
         if (0 !== (self::E_PREG & $Flags)) { // Regular expression evaluation mode.
             if (0 !== (self::E_CASE_INSENSITIVE & $Flags))
-            $Reference = "(?i)$Reference";
+                $Reference = "(?i)$Reference";
 
             if (1 !== preg_match("/$Reference/", self::$RequestPath, $Matches))
-            return false;
+                return false;
 
             return $Matches;
         }
@@ -186,7 +186,7 @@ class Router
 
         // Perform the matching proccess.
         if (false === ($Params = self::Evaluate($Criteria, $EvalFlags)))
-        return false;
+            return false;
 
         // Once in this point, the call execution shall be performed.
 
@@ -432,7 +432,15 @@ class Router
     }
 
     /**
-     * @todo
+     * Perform a namespace-based evaluation for the request.
+     *
+     * @param string $BaseNamespace Path to the root namespace to be used.
+     * @param string $BaseCriteria  Root path for evaluate the request.
+     * @param int    $Verb          Bitwise representation of the desired HTTP verbs to be handled.
+     * @param bool   $Terminate     If true, the ejection will be terminated after
+     *                              calling `$Callback`.
+     *
+     * @return bool  true if a callback was performed.
      */
     public static function MountNamespace(
         string $BaseNamespace,
@@ -440,16 +448,16 @@ class Router
         int $Verb = self::ANY,
         bool $Terminate = true
     ): bool {
-        if(0 !== strpos(self::$RequestPath, $BaseCriteria)) return false;
-        if(0 !== self::$RequestVerb & $Verb) return false;
+        if (0 !== strpos(self::$RequestPath, $BaseCriteria)) return false;
+        if (0 !== self::$RequestVerb & $Verb) return false;
 
         $Path = substr(self::$RequestPath, strlen($BaseCriteria));
         $Full = str_replace('/', '\\', "$BaseNamespace/$Path@" . self::$RequestVerb);
 
         [$Class, $Method] = explode('@', $Full, 2);
 
-        if(!class_exists($Class)) return false;
-        if(!method_exists($Class, $Method)) return false;
+        if (!class_exists($Class)) return false;
+        if (!method_exists($Class, $Method)) return false;
 
         return self::MATCH($Verb, '(.+)', $Full, self::E_PREG, $Terminate);
     }
@@ -512,35 +520,35 @@ class Router
 
         // If it's not a callable, there must be a string with an '@'.
         if (false === strpos($Callback, '@'))
-        throw new \Exception('Callback is not valid.', -1);
+            throw new \Exception('Callback is not valid.', -1);
 
         // Prepend the prefix to the string an assamle a new one.
-        $Callback = self::$ClassPrefix."\\$Callback";
+        $Callback = self::$ClassPrefix . "\\$Callback";
 
         // Split the class path from the method.
         [$ClassPath, $MethodName] = explode('@', $Callback, 2);
 
         // The class and method must be real and reachable.
         if (false === class_exists($ClassPath))
-        throw new \Exception('Given class does not exist.', -1);
+            throw new \Exception('Given class does not exist.', -1);
 
         if (false === method_exists($ClassPath, $MethodName))
-        throw new \Exception('Given method does not exist.', -1);
+            throw new \Exception('Given method does not exist.', -1);
 
         // Create a reflector to see the method metadata.
         $Reflector = new \ReflectionMethod($ClassPath, $MethodName);
 
         if (false === $Reflector->isPublic())
-        throw new \Exception('The method is not public.', -1);
+            throw new \Exception('The method is not public.', -1);
 
         // Perform the call, then.
         try {
             // If it's static, call that way.
             if ($Reflector->isStatic())
-            return forward_static_call_array(
-                [$ClassPath, $MethodName],
-                $Params
-            );
+                return forward_static_call_array(
+                    [$ClassPath, $MethodName],
+                    $Params
+                );
 
             // It's not a satic method, so let's instance and call.
             $ClassInstance = new $ClassPath();

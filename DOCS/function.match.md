@@ -18,7 +18,7 @@ public Router::MATCH(
 ## Parameters
 
 - `Verb`
-  Bitwise representation of the desited HTTP verbs to be handled.
+  Bitwise representation of the desired HTTP verbs to be handled.
 
   The possible values are: `Router::GET`, `Router::HEAD`, `Router::POST`,
   `Router::PUT`, `Router::DELETE`, `Router::CONNECT`, `Router::OPTIONS`,
