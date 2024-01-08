@@ -449,10 +449,10 @@ class Router
         bool $Terminate = true
     ): bool {
         if (0 !== strpos(self::$RequestPath, $BaseCriteria)) return false;
-        if (0 !== self::$RequestVerb & $Verb) return false;
+        if (0 === self::$RequestVerbBitwise & $Verb) return false;
 
         $Path = substr(self::$RequestPath, strlen($BaseCriteria));
-        $Full = str_replace('/', '\\', "$BaseNamespace/$Path@" . self::$RequestVerb);
+        $Full = preg_replace('/[\/\\\\]+/', '\\', "$BaseNamespace/$Path@" . self::$RequestVerb);
 
         [$Class, $Method] = explode('@', $Full, 2);
 
@@ -523,7 +523,7 @@ class Router
             throw new \Exception('Callback is not valid.', -1);
 
         // Prepend the prefix to the string an assamle a new one.
-        $Callback = self::$ClassPrefix . "\\$Callback";
+        $Callback = preg_replace('/^\\\\+/', '\\',  self::$ClassPrefix . "\\$Callback");
 
         // Split the class path from the method.
         [$ClassPath, $MethodName] = explode('@', $Callback, 2);
