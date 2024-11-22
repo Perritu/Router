@@ -185,8 +185,10 @@ class Router
         if (0 === (self::$RequestVerbBitwise & $Verb)) return false;
 
         // Perform the matching proccess.
-        if (false === ($Params = self::Evaluate($Criteria, $EvalFlags)))
-            return false;
+        $Params = self::Evaluate($Criteria, $EvalFlags);
+        // Multi if to pass codacy. Not a fan, but...
+        if (false === $Params) return false;
+        if (true === is_array($Params) && 0 === count($Params)) return false;
 
         // Once in this point, the call execution shall be performed.
 
