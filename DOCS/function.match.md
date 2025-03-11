@@ -44,6 +44,7 @@ class or the method does not exist, or if the method is not public.
 ## Examples
 
 **Handling index with GET and POST**
+
 ```php
 Router::MATCH(
   Router::GET | Router::POST,
@@ -56,6 +57,7 @@ The `$MethodBit` parameter can be mixed using the OR bitwise operator `|`
 to handle multiple HTTP methods.
 
 **Using a class name as the callback**
+
 ```php
 Router::MATCH(
   Router::GET,
@@ -80,6 +82,7 @@ When using a string, you can separate the class name and the method name
 with either `::` or `@`.
 
 **Using a regular expression as the criteria**
+
 ```php
 Router::MATCH(
   Router::GET,
@@ -98,6 +101,7 @@ Valid processing flags are:
 - `Router::IFLAT` and `Router::IPREG`: Case-insensitive variants.
 
 **Not terminating the ejection after calling the callback**
+
 ```php
 Router::MATCH(
   Router::GET,

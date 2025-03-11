@@ -68,13 +68,15 @@ class Router
      * Initializes the router context.
      *
      * @param string $Path The request path. By default, it will use the
-     *   `$_SERVER['REQUEST_URI']` value.
+     *                     `$_SERVER['REQUEST_URI']` value.
      * @param string $Method The request method. By default, it will use the
-     *   `$_SERVER['REQUEST_METHOD']` value.
+     *                       `$_SERVER['REQUEST_METHOD']` value.
      * @return self
      */
-    public static function init(?string $Path = null, ?string $Method = null): string
-    {
+    public static function init(
+        ?string $Path = null,
+        ?string $Method = null
+    ): string {
         self::$Path = $Path ?? explode('?', $_SERVER['REQUEST_URI'])[0];
         self::$Method = \strtoupper($Method ?? $_SERVER['REQUEST_METHOD']);
         self::$MethodBit = match (self::$Method) {
@@ -95,9 +97,10 @@ class Router
      * Initializes the router context. Object oriented version.
      *
      * @param string $Path The request path. By default, it will use the
-     *   `$_SERVER['REQUEST_URI']` value.
+     *                     `$_SERVER['REQUEST_URI']` value.
      * @param string $Method The request method. By default, it will use the
-     *   `$_SERVER['REQUEST_METHOD']` value.
+     *                       `$_SERVER['REQUEST_METHOD']` value.
+     * @return self
      */
     public function __construct(?string $Path = null, ?string $Method = null)
     {
@@ -108,12 +111,12 @@ class Router
     /**
      * Launch the defined callback if given criteria matches the request.
      *
-     * @param int $MethodBit Bitwise representation of the desired HTTP method to be handled.
+     * @param int $MethodBit Bitwise representation of the desired HTTP method
+     *                       to be handled.
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function MATCH(
@@ -126,13 +129,13 @@ class Router
 
         $Criteria = \is_array($Criteria) ? $Criteria : [$Criteria, self::IFLAT];
 
-        if (!($MethodBit & self::$MethodBit)) return null;
+        if (0 === $MethodBit & self::$MethodBit) return null;
 
         [$Criteria, $Flags] = $Criteria;
         $Path = self::$Path;
 
-        if ($Flags & self::FLAT) {
-            if ($Flags & self::CASE_I) {
+        if ($Flags & self::FLAT !== 0) {
+            if ($Flags & self::CASE_I !== 0) {
                 $Criteria = \strtolower($Criteria);
                 $Path = \strtolower($Path);
             }
@@ -140,12 +143,12 @@ class Router
             if ($Criteria === $Path) return self::PerformCall($Callback, $Terminate);
         }
 
-        if ($Flags & self::PREG) {
-            if ($Flags & self::CASE_I) {
+        if ($Flags & self::PREG !== 0) {
+            if ($Flags & self::CASE_I !== 0) {
                 $Criteria = "(?i)$Criteria";
             }
 
-            if (false !== preg_match("/$Criteria/", $Path, $Matches)) {
+            if (preg_match("/$Criteria/", $Path, $Matches) !== false) {
                 unset($Matches[0]);
                 return self::PerformCall($Callback, $Terminate, array_values($Matches));
             }
@@ -160,8 +163,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function ANY(
@@ -178,8 +180,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function DELETE(
@@ -196,8 +197,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function GET(
@@ -214,8 +214,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function HEAD(
@@ -232,8 +231,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function OPTIONS(
@@ -250,8 +248,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function PATCH(
@@ -268,8 +265,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function POST(
@@ -286,8 +282,7 @@ class Router
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   calling `$Callback`.
-     *
+     *                        calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function PUT(
@@ -305,7 +300,8 @@ class Router
      * @param string $MountPoint Mount point to be used.
      * @param int $MethodBit Bitmask of the HTTP methods to be handled.
      * @param bool $Terminate If true, the ejection will be terminated after
-     *   the first callback.
+     *                        the first callback.
+     * @return void
      */
     public static function USE(
         string $Namespace,
@@ -314,7 +310,8 @@ class Router
         bool $Terminate = true
     ): void {
         if (self::$MethodBit === null) self::init();
-        if (!self::$MethodBit & $MethodBit) return; // No match, do nothing.
+        // No match, do nothing.
+        if (self::$MethodBit & $MethodBit === 0) return;
 
         $pointLength = strlen($MountPoint);
         $Point = \substr(self::$Path, $pointLength);
@@ -330,7 +327,9 @@ class Router
         // http method requested.
         $Method = \strtoupper(self::$Method);
         $Reflector = new \ReflectionClass($Class);
-        if (!$Reflector->hasMethod($Method)) return; // No match, do nothing.
+
+        // No match, do nothing.
+        if ($Reflector->hasMethod($Method) !== true) return;
 
         // For last, forward the request to the matched class.
         $oldClassPrefix = self::$ClassPrefix;
@@ -347,19 +346,20 @@ class Router
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
      * @param array Arguments to be passed to the callback.
+     * @return mixed The return value of the callback.
      */
     protected static function PerformCall(
         callable|string|array $Callback,
         bool $Terminate,
         array $Arguments = []
     ): mixed {
-        if (\is_callable($Callback)) {
+        if (\is_callable($Callback) === true) {
             $return = call_user_func_array($Callback, $Arguments);
-            if ($Terminate) exit;
+            if ($Terminate !== false) exit();
             return $return;
         }
 
-        if (\is_array($Callback)) {
+        if (\is_array($Callback) === true) {
             $Callback = implode("::", $Callback);
         }
 
@@ -369,15 +369,15 @@ class Router
         $Callback = str_replace('@', '::', $Callback);
         [$Class, $Method] = explode("::", $Callback, 2);
 
-        if (!class_exists($Class))
+        if (class_exists($Class) !== true)
             throw new Exception("Class $Class not found.");
 
         $Reflector = new ReflectionClass($Class);
-        if (!$Reflector->hasMethod($Method))
+        if ($Reflector->hasMethod($Method) !== true)
             throw new Exception("Method $Method not found in class $Class.");
 
         $ReflectorMethod = $Reflector->getMethod($Method);
-        if (!$ReflectorMethod->isPublic())
+        if ($ReflectorMethod->isPublic() !== true)
             throw new Exception("Method $Method in class $Class is not public.");
 
         $ChildClass = new $Class;

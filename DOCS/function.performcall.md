@@ -5,6 +5,7 @@
 Executes the callback and returns the result.
 
 ## Description
+
 ```php
 protected static function PerformCall(
   callable|string|array $Callback,

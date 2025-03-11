@@ -13,6 +13,7 @@ The shortcuts are:
 - `Router::PUT`
 
 ## Description
+
 ```php
 Router::{ANY|DELETE|GET|HEAD|OPTIONS|PATCH|POST|PUT}(
   string|array $Criteria,
@@ -27,4 +28,3 @@ Router::{ANY|DELETE|GET|HEAD|OPTIONS|PATCH|POST|PUT}(
 
 The only exception is the `$MethodBit` parameter. The shortcuts use the
 named bitwise constants to specify the HTTP verbs to be handled.
-

@@ -3,6 +3,7 @@
 Use a given namespace to handle the request in given conditions
 
 ## Description
+
 ```php
 public static function USE(
   string $Namespace,

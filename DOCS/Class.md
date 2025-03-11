@@ -36,7 +36,7 @@ class Router {
   public static string $ClassPrefix = '';
 
   /* Methods */
-  public function __construct(?string $Path = null, ?string $Method = null);
+  public function __constructor(?string $Path = null, ?string $Method = null);
   public static function init(?string $Path = null, ?string $Method = null): string;
   public static function MATCH(
     int $MethodBit,
@@ -44,42 +44,7 @@ class Router {
     callable|string|array $Callback,
     bool $Terminate = true
   ): mixed;
-  public static function ANY(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function DELETE(
-      string|array $Criteria,
-      callable|string|array $Callback,
-      bool $Terminate = true
-  ): mixed;
-  public static function GET(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function HEAD(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function OPTIONS(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function PATCH(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function POST(
-    string|array $Criteria,
-    callable|string|array $Callback,
-    bool $Terminate = true
-  ): mixed;
-  public static function PUT(
+  public static function ANY, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT(
     string|array $Criteria,
     callable|string|array $Callback,
     bool $Terminate = true
@@ -99,13 +64,16 @@ class Router {
 ```
 
 ## Changelog
+
 - `1.0.5`
-  > First public release. Stable, production ready.
+  First public release. Stable, production ready.
 - `1.0.6-rc1`
-  > First implementationn of `MountNamespace`. Release candidate.
+  First implementationn of `MountNamespace`. Release candidate.
 - `2.0.0`
-  > Refractoring. Better performance, legibility, and stability. :warning: This is a breaking change. <br>
-  > Removed the api response handling: It's not something that should be handled by a router.
+  Refractoring. Better performance, legibility, and stability.
+  :warning: This is a breaking change. <br>
+  Removed the api response handling: It's not something that should be handled
+  by a router.
 
 ## Contents
 
@@ -125,26 +93,30 @@ class Router {
 [Constants]: Class.md#constants
 [Properties]: Class.md#properties
 
-# Contributing
+## Contributing
 
 Found a bug? Please report it on the [GitHub issue tracker]. :cockroach:
 
-You can also contribute by submitting a pull request to the [Canary branch]. :heart: <br>
-When doing so, please be sure to follow the [Contributing guidelines]. :nerd_face:
+You can also contribute by submitting a pull request to the [Canary branch].
+:heart: <br>
+When doing so, please be sure to follow the [Contributing guidelines].
+:nerd_face:
 
 [GitHub issue tracker]: https://github.com/Perritu/Router/issues/new/choose
 [Canary branch]: https://github.com/Perritu/Router/tree/Canary
 [Contributing guidelines]: docs.contributing.md
 
-# License
+## License
 
 The Router is public domain software. It's licennsed under the [Unlicense].
 
 [Unlicense]: ../LICENSE.txt
 
-# Constants <a name="constants"></a>
+## Constants <a name="constants"></a>
 
-Represents the HTTP verbs. `Router::ANY` is a bitwise constant that represents all the HTTP verbs.
+Represents the HTTP verbs. `Router::ANY` is a bitwise constant that represents
+all the HTTP verbs.
+
 ```php
   public const ANY     = 127; # 1111111
   public const DELETE  = 1;   # 0000001
@@ -155,9 +127,11 @@ Represents the HTTP verbs. `Router::ANY` is a bitwise constant that represents a
   public const POST    = 32;  # 0100000
   public const PUT     = 64;  # 1000000
 ```
+
 -----
 
 Flags used to specify the criteria matching method.
+
 - The first bit marks it to be case-insensitive.
 - The second bit marks it to be flat.
 - The third bit marks it to be a regular expression.
@@ -170,9 +144,10 @@ Flags used to specify the criteria matching method.
   public const IPREG  = 5; # 101
 ```
 
-# Properties <a name="properties"></a>
+## Properties <a name="properties"></a>
 
 Description:
+
 ```php
   public string $basePath;
   public static ?string $Path = null;

@@ -2,7 +2,10 @@
 
 A lightweight, simple, yet blazing fast PHP router.
 
-![Packagist Version][] ![Packagist PHP Version][] ![Packagist License][] [![Codacy grade][]](https://app.codacy.com/gh/Perritu/Router/dashboard)
+![Packagist Version][]
+![Packagist PHP Version][]
+![Packagist License][]
+[![Codacy grade][]](https://app.codacy.com/gh/Perritu/Router/dashboard)
 
 [![FOSSA Status][]](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_shield)
 
