@@ -1,565 +1,388 @@
 <?php
 
 /**
- * Router handles requests and perform code calls based in the routes
- * definitions.
- */
-
-namespace Perritu\Router;
-
-use Exception;
-
-/**
  * The Router class.
  *
  * Simplifies the process of handling incoming requests and directing to the
  * developer-defined code flow.
+ *
+ * @author Angel Garcia <git@angelgarcia.dev>
+ */
+
+namespace Perritu\Router;
+
+use Exception, ReflectionClass;
+
+/**
+ * The Router class.
+ *
+ * Handles incoming requests and perform code calls based in the routes
+ * definitions provided in the code flow.
  */
 class Router
 {
-    /**
-     * @var string $RequestPath Path requested by the current run.
-     * @readonly
-     */
-    public static ?string $RequestPath = null;
+    // Bitwise constants
+    // HTTP request method
+    public const ANY     = 127; # Bits 1 to 7
+    public const DELETE  = 1;   # Bit 1
+    public const GET     = 2;   # Bit 2
+    public const HEAD    = 4;   # Bit 3
+    public const OPTIONS = 8;   # Bit 4
+    public const PATCH   = 16;  # Bit 5
+    public const POST    = 32;  # Bit 6
+    public const PUT     = 64;  # Bit 7
+
+    // Matching evaluation mode
+    public const CASE_I = 1; # 001
+    public const FLAT   = 2; # 010
+    public const PREG   = 4; # 100
+    public const IFLAT  = 3; # 011
+    public const IPREG  = 5; # 101
 
     /**
-     * @var string $RequestVerb HTTP verb requested by the current run.
-     * @readonly
+     * @var string $Path Path requested by the current run.
      */
-    public static ?string $RequestVerb = null;
+    public static ?string $Path = null;
 
     /**
-     * @var int $RequestVerbBitwise Bitwise representation of self::RequestVerb.
-     * @readonly
+     * @var string $Method Request method used by the current run.
      */
-    public static int $RequestVerbBitwise;
+    public static ?string $Method = null;
 
     /**
-     * @var string $ClassPrefix Prefix applied when calling method strings.
+     * @var int $MethodBit Bitwise representation of the request method.
      */
-    public static string $ClassPrefix = '';
+    public static int $MethodBit = 0;
 
     /**
-     * @var string $CriteriaPrefix Prefix applied to criteria when evaluating.
+     * @var string $CriteriaPrefix Prefix used to build the criteria string.
      */
     public static string $CriteriaPrefix = '';
 
     /**
-     * Bitwise operators for HTTP verbs
+     * @var string $ClassPrefix Prefix to apply to criteria during class matching.
      */
-    final public const ANY     = 0b1111111; # 127
-    final public const DELETE  = 0b0000001; # 1
-    final public const GET     = 0b0000010; # 2
-    final public const HEAD    = 0b0000100; # 4
-    final public const OPTIONS = 0b0001000; # 8
-    final public const PATCH   = 0b0010000; # 16, 0x10
-    final public const POST    = 0b0100000; # 32, 0x20
-    final public const PUT     = 0b1000000; # 64, 0x40
+    public static string $ClassPrefix = '';
 
     /**
-     * Bitwise operators for ::Evaluate operations
-     */
-    final public const E_FLAT   = 0b001; # 1
-    final public const E_FLAT_I = 0b101; # 5
-    final public const E_PREG   = 0b010; # 2
-    final public const E_PREG_I = 0b110; # 6
-
-    /**
-     * Bitwise operator for ::Evaluate internal operations
-     */
-    final protected const E_CASE_INSENSITIVE = 0b100; // 4
-
-    /**
-     * Inits a new instance and sets the path and HTTP verb to be used.
+     * Initializes the router context.
      *
-     * @param string $Path The path presented by the request.
-     * @param string $Verb The HTTP verb presented by the request.
+     * @param string $Path The request path. By default, it will use the
+     *   `$_SERVER['REQUEST_URI']` value.
+     * @param string $Method The request method. By default, it will use the
+     *   `$_SERVER['REQUEST_METHOD']` value.
+     * @return self
      */
-    public function __construct(string $Path = null, string $Verb = null)
+    public static function init(?string $Path = null, ?string $Method = null): string
     {
-        if (null === $Path)
-            $Path = self::IfNUll($_SERVER['REQUEST_URI'], null);
+        self::$Path = $Path ?? explode('?', $_SERVER['REQUEST_URI'])[0];
+        self::$Method = \strtoupper($Method ?? $_SERVER['REQUEST_METHOD']);
+        self::$MethodBit = match (self::$Method) {
+            'DELETE'  => self::DELETE,
+            'GET'     => self::GET,
+            'HEAD'    => self::HEAD,
+            'OPTIONS' => self::OPTIONS,
+            'PATCH'   => self::PATCH,
+            'POST'    => self::POST,
+            'PUT'     => self::PUT,
+            default   => throw new Exception('Invalid HTTP verb.', -1)
+        };
 
-        if (null === $Verb)
-            $Verb = self::IfNUll($_SERVER['REQUEST_METHOD'], null);
-
-        if (null === $Path || null === $Verb)
-            throw new Exception('Cannot fetch the request values.', -1);
-
-        self::$RequestPath = $Path;
-        self::$RequestVerb = $Verb;
-
-        switch ($Verb) {
-            case "DELETE":
-                self::$RequestVerbBitwise = self::DELETE;
-                break;
-
-            case "GET":
-                self::$RequestVerbBitwise = self::GET;
-                break;
-
-            case "HEAD":
-                self::$RequestVerbBitwise = self::HEAD;
-                break;
-
-            case "OPTIONS":
-                self::$RequestVerbBitwise = self::OPTIONS;
-                break;
-
-            case "PATCH":
-                self::$RequestVerbBitwise = self::PATCH;
-                break;
-
-            case "POST":
-                self::$RequestVerbBitwise = self::POST;
-                break;
-
-            case "PUT":
-                self::$RequestVerbBitwise = self::PUT;
-                break;
-
-            default:
-                exit;
-        }
+        return self::class;
     }
 
     /**
-     * Perform a request evaluation against the given parametters.
+     * Initializes the router context. Object oriented version.
      *
-     * @param string $Criteria Criteria to be used.
-     * @param int    $Flags    Operation mode.
-     * @return bool  `true` if the operation matches.
+     * @param string $Path The request path. By default, it will use the
+     *   `$_SERVER['REQUEST_URI']` value.
+     * @param string $Method The request method. By default, it will use the
+     *   `$_SERVER['REQUEST_METHOD']` value.
      */
-    public static function Evaluate(string $Criteria, int $Flags)
+    public function __construct(?string $Path = null, ?string $Method = null)
     {
-        // Reference for internal use
-        $Reference = self::$CriteriaPrefix . $Criteria;
-
-        if (0 !== (self::E_FLAT & $Flags)) { // Flat plain-text evaluation mode.
-            if (0 !== (self::E_CASE_INSENSITIVE & $Flags))
-                return strtolower($Reference) == strtolower(self::$RequestPath);
-
-            return $Reference == self::$RequestPath;
-        }
-
-        if (0 !== (self::E_PREG & $Flags)) { // Regular expression evaluation mode.
-            if (0 !== (self::E_CASE_INSENSITIVE & $Flags))
-                $Reference = "(?i)$Reference";
-
-            if (1 !== preg_match("/$Reference/", self::$RequestPath, $Matches))
-                return false;
-
-            return $Matches;
-        }
-
-        throw new \Exception("Flags is invalid", -1);
+        self::init($Path, $Method);
     }
 
+
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param int    $Verb      Bitwise junction of desired HTTP verbs to be
-     *                          handled.
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param int $MethodBit Bitwise representation of the desired HTTP method to be handled.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     *
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function MATCH(
-        int $Verb,
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        int $MethodBit,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        // Trigger the constructor if not already.
-        if (null === self::$RequestPath) new \Perritu\Router\Router();
+    ): mixed {
+        if (self::$Path === null) self::init();
 
-        // If the current HTTP verb is NOT wanted, end function.
-        if (0 === (self::$RequestVerbBitwise & $Verb)) return false;
+        $Criteria = \is_array($Criteria) ? $Criteria : [$Criteria, self::IFLAT];
 
-        // Perform the matching proccess.
-        $Params = self::Evaluate($Criteria, $EvalFlags);
-        // Multi if to pass codacy. Not a fan, but...
-        if (false === $Params) return false;
-        if (true === is_array($Params) && 0 === count($Params)) return false;
+        if (!($MethodBit & self::$MethodBit)) return null;
 
-        // Once in this point, the call execution shall be performed.
+        [$Criteria, $Flags] = $Criteria;
+        $Path = self::$Path;
 
-        // Sanitize the `$Params` (by converting a possible `true` to array)
-        if (false === is_array($Params)) $Params = [];
-
-        // Perform the `$Callback` excecution.
-
-        $Response = self::PerformCall($Callback, $Params);
-
-        // If the result is an array, output it as an API response.
-        if (is_array($Response)) {
-            // If the requested content is known, output that way.
-            if (self::IsApi()) {
-                // ...
+        if ($Flags & self::FLAT) {
+            if ($Flags & self::CASE_I) {
+                $Criteria = \strtolower($Criteria);
+                $Path = \strtolower($Path);
             }
 
-            header('Content-type: application/json');
-            echo json_encode($Response, JSON_UNESCAPED_UNICODE);
+            if ($Criteria === $Path) return self::PerformCall($Callback, $Terminate);
         }
 
-        // Terminate the code execution.
-        if ($Terminate)
-            exit;
+        if ($Flags & self::PREG) {
+            if ($Flags & self::CASE_I) {
+                $Criteria = "(?i)$Criteria";
+            }
 
-        return true;
+            if (false !== preg_match("/$Criteria/", $Path, $Matches)) {
+                unset($Matches[0]);
+                return self::PerformCall($Callback, $Terminate, array_values($Matches));
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function ANY(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::ANY,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::ANY, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function DELETE(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::DELETE,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::DELETE, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function GET(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::GET,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::GET, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function HEAD(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::HEAD,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::HEAD, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function OPTIONS(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::OPTIONS,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::OPTIONS, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function PATCH(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::PATCH,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::PATCH, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function POST(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::POST,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::POST, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform code call when a request mathces with the given criteria.
+     * Launch the defined callback if given criteria matches the request.
      *
-     * @param string $Criteria  String to be used in the matching process.
-     * @param mixed  $Callback  String or callable to be executed.
-     * @param int    $EvalFlags Bitwise to be used in the matching process.
-     * @param bool   $Terminate If true, the ejection will be terminated after
-     *                          calling `$Callback`.
+     * @param string|array $Criteria Criteria to be used.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   calling `$Callback`.
      *
-     * @return bool  true if `$Callback` was called.
-     * @see function.evaluate.md
+     * @return mixed The return value of the callback.
      */
     public static function PUT(
-        string $Criteria,
-        callable | string $Callback,
-        int $EvalFlags = self::E_FLAT_I,
+        string|array $Criteria,
+        callable|string|array $Callback,
         bool $Terminate = true
-    ): bool {
-        return self::MATCH(
-            self::PUT,
-            $Criteria,
-            $Callback,
-            $EvalFlags,
-            $Terminate
-        );
+    ): mixed {
+        return self::MATCH(self::PUT, $Criteria, $Callback, $Terminate);
     }
 
     /**
-     * Perform a namespace-based evaluation for the request.
+     * Use a given namespace to handle the request in given conditions.
      *
-     * @param string $BaseNamespace Path to the root namespace to be used.
-     * @param string $BaseCriteria  Root path for evaluate the request.
-     * @param int    $Verb          Bitwise representation of the desired HTTP verbs to be handled.
-     * @param bool   $Terminate     If true, the ejection will be terminated after
-     *                              calling `$Callback`.
-     *
-     * @return bool  true if a callback was performed.
+     * @param string $Namespace Namespace to be used.
+     * @param string $MountPoint Mount point to be used.
+     * @param int $MethodBit Bitmask of the HTTP methods to be handled.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     *   the first callback.
      */
-    public static function MountNamespace(
-        string $BaseNamespace,
-        string $BaseCriteria = '/',
-        int $Verb = self::ANY,
+    public static function USE(
+        string $Namespace,
+        string $MountPoint,
+        int $MethodBit = self::ANY,
         bool $Terminate = true
-    ): bool {
-        if (0 !== strpos(self::$RequestPath, $BaseCriteria)) return false;
-        if (0 === self::$RequestVerbBitwise & $Verb) return false;
+    ): void {
+        if (self::$MethodBit === null) self::init();
+        if (!self::$MethodBit & $MethodBit) return; // No match, do nothing.
 
-        $Path = substr(self::$RequestPath, strlen($BaseCriteria));
-        $Full = preg_replace('/[\/\\\\]+/', '\\', "$BaseNamespace/$Path@" . self::$RequestVerb);
+        $pointLength = strlen($MountPoint);
+        $Point = \substr(self::$Path, $pointLength);
 
-        [$Class, $Method] = explode('@', $Full, 2);
+        // If no match, do nothing.
+        if (\substr(self::$Path, 0, $pointLength) !== $MountPoint) return;
 
-        if (!class_exists($Class)) return false;
-        if (!method_exists($Class, $Method)) return false;
+        // Check if there's a class for the namespace that matches the point.
+        $Class = "\\$Namespace\\$Point";
+        if (!class_exists($Class)) return; // No match, do nothing.
 
-        return self::MATCH($Verb, '(.+)', $Full, self::E_PREG, $Terminate);
+        // For the matched class, check if there's a method that matches the
+        // http method requested.
+        $Method = \strtoupper(self::$Method);
+        $Reflector = new \ReflectionClass($Class);
+        if (!$Reflector->hasMethod($Method)) return; // No match, do nothing.
+
+        // For last, forward the request to the matched class.
+        $oldClassPrefix = self::$ClassPrefix;
+        self::$ClassPrefix = '';
+        self::PerformCall([$Class, $Method], $Terminate);
+        self::$ClassPrefix = $oldClassPrefix;
+        // Note: By resetting the class prefix, the call forwarded matches with
+        //   the right forwarded class.
     }
 
     /**
-     * Try to guess if the current request is expecting an API response.
+     * Perform the callback call. Internal use only.
      *
-     * @return bool `true` if the current request is expecting an API response.
+     * @param callable|string|array $Callback String or callable to be executed.
+     * @param bool $Terminate If true, the ejection will be terminated after
+     * @param array Arguments to be passed to the callback.
      */
-    public static function IsApi(): bool
-    {
-        // If the header is ausent, drop this out.
-        if (false === isset($_SERVER['HTTP_CONTENT_TYPE'])) return false;
-
-        return in_array(
-            strtolower($_SERVER['HTTP_CONTENT_TYPE']),
-            [
-                'application/json',
-                'application/xml',
-                'text/xml',
-            ]
-        );
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Private functions. Internal use only. ///////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Return the first parametter if is not null, the fallback if it's.
-     *
-     * @param mixed $Test     Value to be tested.
-     * @param mixed $Fallback Fallback value to be returned.
-     * @return mixed Return `$Fallback` if `$Test` is null, or `$Test` if not.
-     */
-    private static function IfNUll(&$Test, $Fallback)
-    {
-        return (null === $Test) ? $Fallback : $Test;
-    }
-
-    /**
-     * Perform the call execution and return the result of it.
-     *
-     * @param callable $Callback Callable or string to method.
-     * @param array    $Params   Array to pass as function params.
-     * @return mixed   Result of the function execution.
-     */
-    private static function PerformCall(
-        callable | string $Callback,
-        array $Params
-    ) {
-        // Try to call it directly
-        if (is_callable($Callback)) {
-            try {
-                return call_user_func_array($Callback, $Params);
-            } catch (\Exception $E) {
-                throw new \Exception('Callback excecution failed.', -1, $E);
-            }
+    protected static function PerformCall(
+        callable|string|array $Callback,
+        bool $Terminate,
+        array $Arguments = []
+    ): mixed {
+        if (\is_callable($Callback)) {
+            $return = call_user_func_array($Callback, $Arguments);
+            if ($Terminate) exit;
+            return $return;
         }
 
-        // If it's not a callable, there must be a string with an '@'.
-        if (false === strpos($Callback, '@'))
-            throw new \Exception('Callback is not valid.', -1);
-
-        // Prepend the prefix to the string an assamle a new one.
-        $Callback = preg_replace('/^\\\\+/', '\\',  self::$ClassPrefix . "\\$Callback");
-
-        // Split the class path from the method.
-        [$ClassPath, $MethodName] = explode('@', $Callback, 2);
-
-        // The class and method must be real and reachable.
-        if (false === class_exists($ClassPath))
-            throw new \Exception('Given class does not exist.', -1);
-
-        if (false === method_exists($ClassPath, $MethodName))
-            throw new \Exception('Given method does not exist.', -1);
-
-        // Create a reflector to see the method metadata.
-        $Reflector = new \ReflectionMethod($ClassPath, $MethodName);
-
-        if (false === $Reflector->isPublic())
-            throw new \Exception('The method is not public.', -1);
-
-        // Perform the call, then.
-        try {
-            // If it's static, call that way.
-            if ($Reflector->isStatic())
-                return forward_static_call_array(
-                    [$ClassPath, $MethodName],
-                    $Params
-                );
-
-            // It's not a satic method, so let's instance and call.
-            $ClassInstance = new $ClassPath();
-            return call_user_func_array(
-                [$ClassInstance, $MethodName],
-                $Params
-            );
-        } catch (\Exception $E) {
-            throw new \Exception('Callback excecution failed.', -1, $E);
+        if (\is_array($Callback)) {
+            $Callback = implode("::", $Callback);
         }
+
+        // Apply class prefix and transformations.
+        $Callback = self::$ClassPrefix . "\\$Callback";
+        $Callback = preg_replace('/[\\\\\\/]+/', '\\', $Callback); // Literally, the Regex is: /[\\\/]+/
+        $Callback = str_replace('@', '::', $Callback);
+        [$Class, $Method] = explode("::", $Callback, 2);
+
+        if (!class_exists($Class))
+            throw new Exception("Class $Class not found.");
+
+        $Reflector = new ReflectionClass($Class);
+        if (!$Reflector->hasMethod($Method))
+            throw new Exception("Method $Method not found in class $Class.");
+
+        $ReflectorMethod = $Reflector->getMethod($Method);
+        if (!$ReflectorMethod->isPublic())
+            throw new Exception("Method $Method in class $Class is not public.");
+
+        $ChildClass = new $Class;
+        $return = $ReflectorMethod->invokeArgs($ChildClass, $Arguments);
+        if ($Terminate) exit;
+        return $return;
     }
 }
