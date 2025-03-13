@@ -34,6 +34,7 @@ All you need is PHP 8.1 or greater and any URL rewriting technique.
 ## Installation.
 
 There are 2 ways of install.
+
 - Using [composer]. (Recomended)
   - `composer require perritu/router`
 - Direct download.
@@ -50,6 +51,7 @@ Once imported, do a `use` statement to start using the router, then, start with
 your routing definitions.
 
 Bare example:
+
 ```php
 // Require statement
 require_once('../vendor/autoload.php'); // Or router.php if not using composer.

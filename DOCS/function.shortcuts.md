@@ -3,6 +3,7 @@
 Alias functions for the `Router::MATCH` method.
 
 The shortcuts are:
+
 - `Router::ANY`
 - `Router::DELETE`
 - `Router::GET`

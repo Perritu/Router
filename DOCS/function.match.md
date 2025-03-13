@@ -96,6 +96,7 @@ the requested path. In this case, the `$Criteria` parameter is an array
 to specify the regular expression and the method to process it.
 
 Valid processing flags are:
+
 - `Router::FLAT`: Check the criteria against the request path as-is.
 - `Router::PREG`: Use the criteria as a regular expression to match the request.
 - `Router::IFLAT` and `Router::IPREG`: Case-insensitive variants.

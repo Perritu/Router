@@ -321,7 +321,7 @@ class Router
 
         // Check if there's a class for the namespace that matches the point.
         $Class = "\\$Namespace\\$Point";
-        if (!class_exists($Class)) return; // No match, do nothing.
+        if (class_exists($Class) === false) return;
 
         // For the matched class, check if there's a method that matches the
         // http method requested.
@@ -345,7 +345,7 @@ class Router
      *
      * @param callable|string|array $Callback String or callable to be executed.
      * @param bool $Terminate If true, the ejection will be terminated after
-     * @param array Arguments to be passed to the callback.
+     * @param array $Arguments Arguments to be passed to the callback.
      * @return mixed The return value of the callback.
      */
     protected static function Dispatch(
@@ -382,7 +382,7 @@ class Router
 
         $ChildClass = new $Class;
         $return = $ReflectorMethod->invokeArgs($ChildClass, $Arguments);
-        if ($Terminate) exit;
+        if ($Terminate) exit();
         return $return;
     }
 }
