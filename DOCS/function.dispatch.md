@@ -1,13 +1,13 @@
-# Router::PerformCall
-
-:warning: Protected method.
+# Router::Dispatch
 
 Executes the callback and returns the result.
+
+:warning: Protected method.
 
 ## Description
 
 ```php
-protected static function PerformCall(
+protected static function Dispatch(
   callable|string|array $Callback,
   bool $Terminate = true,
   array $Arguments = []

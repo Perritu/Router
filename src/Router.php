@@ -140,7 +140,7 @@ class Router
                 $Path = \strtolower($Path);
             }
 
-            if ($Criteria === $Path) return self::PerformCall($Callback, $Terminate);
+            if ($Criteria === $Path) return self::Dispatch($Callback, $Terminate);
         }
 
         if ($Flags & self::PREG !== 0) {
@@ -150,7 +150,7 @@ class Router
 
             if (preg_match("/$Criteria/", $Path, $Matches) !== false) {
                 unset($Matches[0]);
-                return self::PerformCall($Callback, $Terminate, array_values($Matches));
+                return self::Dispatch($Callback, $Terminate, array_values($Matches));
             }
         }
 
@@ -334,7 +334,7 @@ class Router
         // For last, forward the request to the matched class.
         $oldClassPrefix = self::$ClassPrefix;
         self::$ClassPrefix = '';
-        self::PerformCall([$Class, $Method], $Terminate);
+        self::Dispatch([$Class, $Method], $Terminate);
         self::$ClassPrefix = $oldClassPrefix;
         // Note: By resetting the class prefix, the call forwarded matches with
         //   the right forwarded class.
@@ -348,7 +348,7 @@ class Router
      * @param array Arguments to be passed to the callback.
      * @return mixed The return value of the callback.
      */
-    protected static function PerformCall(
+    protected static function Dispatch(
         callable|string|array $Callback,
         bool $Terminate,
         array $Arguments = []

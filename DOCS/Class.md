@@ -55,7 +55,7 @@ class Router {
     int $MethodBit = self::ANY,
     bool $Terminate = true
   ): void;
-  protected static function PerformCall(
+  protected static function Dispatch(
     callable|string|array $Callback,
     bool $Terminate,
     array $Arguments = []
@@ -65,15 +65,12 @@ class Router {
 
 ## Changelog
 
-- `1.0.5`
-  First public release. Stable, production ready.
-- `1.0.6-rc1`
-  First implementationn of `MountNamespace`. Release candidate.
-- `2.0.0`
-  Refractoring. Better performance, legibility, and stability.
-  :warning: This is a breaking change. <br>
-  Removed the api response handling: It's not something that should be handled
-  by a router.
+- `1.0.5` First public release. Stable, production ready.
+- `1.0.6-rc1` First implementationn of `MountNamespace`. Release candidate.
+- `2.0.0` :warning: This is a breaking change.
+  - Refractoring. Better performance, legibility, and stability.
+  - Removed the api response handling: It's not something that should be handled
+    by a router.
 
 ## Contents
 
@@ -81,7 +78,7 @@ class Router {
 - [MATCH] -- Launch the defined callback if given criteria matches the request.
 - [Shortcuts] -- Alias functions for the `Router::MATCH` method.
 - [USE] -- Mount a namespace to handle the requests.
-- [PerformCall] -- :warning: Internal use only. Executes the callback.
+- [Dispatch] -- :warning: Internal use only. Executes the callback.
 - [Constants] -- Constants in the `Router` class.
 - [Properties] -- Properties in the `Router` class.
 
@@ -89,7 +86,7 @@ class Router {
 [MATCH]: function.match.md
 [Shortcuts]: function.shortcuts.md
 [USE]: function.use.md
-[PerformCall]: function.performcall.md
+[Dispatch]: function.dispatch.md
 [Constants]: Class.md#constants
 [Properties]: Class.md#properties
 
