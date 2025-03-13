@@ -92,12 +92,11 @@ class Router {
 
 ## Contributing
 
-Found a bug? Please report it on the [GitHub issue tracker]. :cockroach:
+Found a bug? Please report it on the [GitHub issue tracker]. 🪳
 
-You can also contribute by submitting a pull request to the [Canary branch].
-:heart: <br>
-When doing so, please be sure to follow the [Contributing guidelines].
-:nerd_face:
+You can also contribute by submitting a pull request to the [Canary branch]. ❤️
+
+When doing so, please be sure to follow the [Contributing guidelines]. 😎
 
 [GitHub issue tracker]: https://github.com/Perritu/Router/issues/new/choose
 [Canary branch]: https://github.com/Perritu/Router/tree/Canary
