@@ -5,7 +5,7 @@ A lightweight, simple, yet blazing fast PHP router.
 ![Packagist Version][]
 ![Packagist PHP Version][]
 ![Packagist License][]
-[![Codacy grade][]](https://app.codacy.com/gh/Perritu/Router/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f42059a4dc754afd8f6ff26cded3c50e)](https://app.codacy.com/gh/Perritu/Router/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 [![FOSSA Status][]](https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=badge_shield)
 
@@ -75,7 +75,6 @@ FOSSA: https://app.fossa.com/projects/git%2Bgithub.com%2FPerritu%2FRouter?ref=ba
 [DOCS]:DOCS/Class.md
 
 [composer]:https://getcomposer.org/download/
-[Codacy grade]:https://img.shields.io/codacy/grade/80c9ca95a79846d29723b545196c7f0e?style=flat-square
 [Packagist Version]:https://img.shields.io/packagist/v/perritu/router?style=flat-square
 [Packagist PHP Version]:https://img.shields.io/packagist/dependency-v/perritu/router/php?style=flat-square
 [Packagist License]:https://img.shields.io/packagist/l/perritu/router?style=flat-square
