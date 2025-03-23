@@ -67,18 +67,35 @@ class Router
     /**
      * Initializes the router context.
      *
-     * @param string $Path The request path. By default, it will use the
-     *                     `$_SERVER['REQUEST_URI']` value.
-     * @param string $Method The request method. By default, it will use the
-     *                       `$_SERVER['REQUEST_METHOD']` value.
+     * @param string $Path The request path. `$_SERVER['REQUEST_URI']` by default.
+     * @param string $Method The request method. `$_SERVER['REQUEST_METHOD']`.
+     *                       by default.
+     * @param string $Host The host name. `$_SERVER['HTTP_HOST']` by default.
+     * @param int $Port The port number. `$_SERVER['SERVER_PORT']` by default.
      * @return self
      */
     public static function init(
         ?string $Path = null,
-        ?string $Method = null
+        ?string $Method = null,
+        ?string $Host = null,
+        ?int $Port = null
     ): string {
-        self::$Path = $Path ?? explode('?', $_SERVER['REQUEST_URI'])[0];
-        self::$Method = \strtoupper($Method ?? $_SERVER['REQUEST_METHOD']);
+        try {
+            $RequestString = sprintf(
+                '%s://%s:%u/%s',
+                $Method ?? $_SERVER['REQUEST_SCHEME'],
+                $Host ?? $_SERVER['HTTP_HOST'],
+                $Port ?? $_SERVER['SERVER_PORT'],
+                $Path ?? $_SERVER['REQUEST_URI']
+            );
+
+            $Components = parse_url($RequestString);
+            $Path = $Components['path'];
+            $Method = $Components['scheme'];
+        } catch (Exception $e) {
+            throw new Exception('Invalid request data.', 0, $e);
+        }
+
         self::$MethodBit = match (self::$Method) {
             'DELETE'  => self::DELETE,
             'GET'     => self::GET,
@@ -96,15 +113,20 @@ class Router
     /**
      * Initializes the router context. Object oriented version.
      *
-     * @param string $Path The request path. By default, it will use the
-     *                     `$_SERVER['REQUEST_URI']` value.
-     * @param string $Method The request method. By default, it will use the
-     *                       `$_SERVER['REQUEST_METHOD']` value.
+     * @param string $Path The request path. `$_SERVER['REQUEST_URI']` by default.
+     * @param string $Method The request method. `$_SERVER['REQUEST_METHOD']`.
+     *                       by default.
+     * @param string $Host The host name. `$_SERVER['HTTP_HOST']` by default.
+     * @param int $Port The port number. `$_SERVER['SERVER_PORT']` by default.
      * @return self
      */
-    public function __construct(?string $Path = null, ?string $Method = null)
-    {
-        self::init($Path, $Method);
+    public function __construct(
+        ?string $Path = null,
+        ?string $Method = null,
+        ?string $Host = null,
+        ?int $Port = null
+    ) {
+        self::init($Path, $Method, $Host, $Port);
     }
 
 
