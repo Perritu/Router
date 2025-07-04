@@ -88,26 +88,29 @@ class Router
                 $Port ?? $_SERVER['SERVER_PORT'],
                 $Path ?? $_SERVER['REQUEST_URI']
             );
-
             $Components = parse_url($RequestString);
-            $Path = $Components['path'];
-            $Method = $Components['scheme'];
+
+            self::$Path = preg_replace(
+                '/\/((\.\.?\/)+|\/+)/',
+                '/',
+                $Components['path']
+            );
+            self::$Method = $Components['scheme'];
+            self::$MethodBit = match (self::$Method) {
+                'DELETE'  => self::DELETE,
+                'GET'     => self::GET,
+                'HEAD'    => self::HEAD,
+                'OPTIONS' => self::OPTIONS,
+                'PATCH'   => self::PATCH,
+                'POST'    => self::POST,
+                'PUT'     => self::PUT,
+                default   => throw new Exception('Invalid HTTP verb.', -1)
+            };
+
+            return self::class;
         } catch (Exception $e) {
             throw new Exception('Invalid request data.', 0, $e);
         }
-
-        self::$MethodBit = match (self::$Method) {
-            'DELETE'  => self::DELETE,
-            'GET'     => self::GET,
-            'HEAD'    => self::HEAD,
-            'OPTIONS' => self::OPTIONS,
-            'PATCH'   => self::PATCH,
-            'POST'    => self::POST,
-            'PUT'     => self::PUT,
-            default   => throw new Exception('Invalid HTTP verb.', -1)
-        };
-
-        return self::class;
     }
 
     /**
@@ -133,12 +136,10 @@ class Router
     /**
      * Launch the defined callback if given criteria matches the request.
      *
-     * @param int $MethodBit Bitwise representation of the desired HTTP method
-     *                       to be handled.
+     * @param int $MethodBit Bitwise representation of the desired HTTP method to be handled.
      * @param string|array $Criteria Criteria to be used.
      * @param callable|string|array $Callback String or callable to be executed.
-     * @param bool $Terminate If true, the ejection will be terminated after
-     *                        calling `$Callback`.
+     * @param bool $Terminate If true, the ejection will be terminated after calling `$Callback`.
      * @return mixed The return value of the callback.
      */
     public static function MATCH(
@@ -149,15 +150,15 @@ class Router
     ): mixed {
         if (self::$Path === null) self::init();
 
+        if (!$MethodBit & self::$MethodBit) return null;
+
         $Criteria = \is_array($Criteria) ? $Criteria : [$Criteria, self::IFLAT];
-
-        if (0 === $MethodBit & self::$MethodBit) return null;
-
         [$Criteria, $Flags] = $Criteria;
+        $Criteria = self::$CriteriaPrefix . $Criteria;
         $Path = self::$Path;
 
-        if ($Flags & self::FLAT !== 0) {
-            if ($Flags & self::CASE_I !== 0) {
+        if ($Flags & self::FLAT) {
+            if ($Flags & self::CASE_I) {
                 $Criteria = \strtolower($Criteria);
                 $Path = \strtolower($Path);
             }
@@ -165,8 +166,8 @@ class Router
             if ($Criteria === $Path) return self::Dispatch($Callback, $Terminate);
         }
 
-        if ($Flags & self::PREG !== 0) {
-            if ($Flags & self::CASE_I !== 0) {
+        if ($Flags & self::PREG) {
+            if ($Flags & self::CASE_I) {
                 $Criteria = "(?i)$Criteria";
             }
 
