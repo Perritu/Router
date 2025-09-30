@@ -83,7 +83,7 @@ class Router
         try {
             $RequestString = sprintf(
                 '%s://%s:%u/%s',
-                $Method ?? $_SERVER['REQUEST_SCHEME'],
+                $Method ?? $_SERVER['REQUEST_METHOD'],
                 $Host ?? $_SERVER['HTTP_HOST'],
                 $Port ?? $_SERVER['SERVER_PORT'],
                 $Path ?? $_SERVER['REQUEST_URI']
