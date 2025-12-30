@@ -150,7 +150,7 @@ class Router
     ): mixed {
         if (self::$Path === null) self::init();
 
-        if (!$MethodBit & self::$MethodBit) return null;
+        if (($MethodBit & self::$MethodBit) === 0) return null;
 
         $Criteria = \is_array($Criteria) ? $Criteria : [$Criteria, self::IFLAT];
         [$Criteria, $Flags] = $Criteria;
