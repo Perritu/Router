@@ -72,7 +72,7 @@ class Router
      *                       by default.
      * @param string $Host The host name. `$_SERVER['HTTP_HOST']` by default.
      * @param int $Port The port number. `$_SERVER['SERVER_PORT']` by default.
-     * @return self
+     * @return string The class name.
      */
     public static function init(
         ?string $Path = null,
@@ -164,14 +164,12 @@ class Router
             }
 
             if ($Criteria === $Path) return self::Dispatch($Callback, $Terminate);
-        }
-
-        if ($Flags & self::PREG) {
+        } elseif ($Flags & self::PREG) {
             if ($Flags & self::CASE_I) {
                 $Criteria = "(?i)$Criteria";
             }
 
-            if (preg_match("/$Criteria/", $Path, $Matches) !== false) {
+            if (preg_match("/$Criteria/", $Path, $Matches) === 1) {
                 unset($Matches[0]);
                 return self::Dispatch($Callback, $Terminate, array_values($Matches));
             }
